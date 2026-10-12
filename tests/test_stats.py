@@ -41,3 +41,16 @@ def test_unique_word_count_empty() -> None:
 
 def test_unique_word_count_is_exported() -> None:
     assert "unique_word_count" in textstats.__all__
+
+
+def test_lexical_density_is_unique_over_total() -> None:
+    assert textstats.lexical_density("the cat the cat") == 0.5
+
+
+def test_lexical_density_without_words_is_zero() -> None:
+    assert textstats.lexical_density("") == 0.0
+    assert textstats.lexical_density("!!") == 0.0
+
+
+def test_lexical_density_is_exported() -> None:
+    assert "lexical_density" in textstats.__all__

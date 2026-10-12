@@ -34,3 +34,11 @@ def top_words(text: str, n: int = 3) -> list[tuple[str, int]]:
 def unique_word_count(text: str) -> int:
     """Return the number of distinct words in ``text``."""
     return len(set(words(text)))
+
+
+def lexical_density(text: str) -> float:
+    """Return distinct words divided by total words, or ``0.0`` when there are none."""
+    total = word_count(text)
+    if total == 0:
+        return 0.0
+    return unique_word_count(text) / total
