@@ -1,5 +1,6 @@
 import pytest
 
+import textstats
 from textstats import char_count, top_words, word_count, words
 
 
@@ -28,3 +29,15 @@ def test_top_words_orders_by_count_then_alphabetically() -> None:
 def test_top_words_rejects_negative_n() -> None:
     with pytest.raises(ValueError):
         top_words("a", n=-1)
+
+
+def test_unique_word_count_counts_distinct_lowercased_words() -> None:
+    assert textstats.unique_word_count("The cat the CAT a") == 3
+
+
+def test_unique_word_count_empty() -> None:
+    assert textstats.unique_word_count("") == 0
+
+
+def test_unique_word_count_is_exported() -> None:
+    assert "unique_word_count" in textstats.__all__

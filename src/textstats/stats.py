@@ -29,3 +29,8 @@ def top_words(text: str, n: int = 3) -> list[tuple[str, int]]:
         raise ValueError("n must be non-negative")
     counts = Counter(words(text))
     return sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))[:n]
+
+
+def unique_word_count(text: str) -> int:
+    """Return the number of distinct words in ``text``."""
+    return len(set(words(text)))
