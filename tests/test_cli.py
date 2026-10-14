@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -47,3 +48,27 @@ def test_python_dash_m_textstats_prints_report(tmp_path: Path) -> None:
 
     assert result.returncode == 0
     assert result.stdout == format_report(TEXT) + "\n"
+
+
+def test_file_is_decoded_as_utf8_under_a_non_utf8_locale(tmp_path: Path) -> None:
+    text = "café naïve café"
+    path = tmp_path / "in.txt"
+    path.write_bytes(text.encode("utf-8"))
+    # C locale with UTF-8 mode and locale coercion off makes the default encoding ASCII.
+    env = {
+        **os.environ,
+        "LC_ALL": "C",
+        "PYTHONUTF8": "0",
+        "PYTHONCOERCECLOCALE": "0",
+        "PYTHONIOENCODING": "utf-8",
+    }
+
+    result = subprocess.run(
+        [sys.executable, "-m", "textstats", str(path)],
+        capture_output=True,
+        env=env,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout.decode("utf-8") == format_report(text) + "\n"
