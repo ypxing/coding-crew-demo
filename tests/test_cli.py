@@ -32,3 +32,15 @@ def test_main_top_limits_report_to_n_words(
     out = capsys.readouterr().out
     assert out == format_report(text, n=2) + "\n"
     assert out.endswith("top words:\n  the: 3\n  cat: 2\n")
+
+
+def test_main_without_top_lists_three_words(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    path = tmp_path / "input.txt"
+    path.write_text("d c c b b b a a a a", encoding="utf-8")
+
+    assert main([str(path)]) == 0
+
+    out = capsys.readouterr().out
+    assert out.endswith("top words:\n  a: 4\n  b: 3\n  c: 2\n")
