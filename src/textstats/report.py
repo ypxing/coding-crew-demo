@@ -11,5 +11,6 @@ def format_report(text: str, n: int = 3) -> str:
         f"characters (no spaces): {char_count(text, include_spaces=False)}",
         "top words:",
     ]
-    lines += [f"  {word}: {count}" for word, count in top_words(text, n)]
+    top = top_words(text, n)
+    lines += [f"  {word}: {count}" for word, count in top] if top else ["  (none)"]
     return "\n".join(lines)
