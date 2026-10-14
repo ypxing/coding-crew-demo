@@ -1,3 +1,5 @@
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -30,3 +32,18 @@ def test_main_top_option_limits_top_words(
     assert main([str(path), "--top", "2"]) == 0
 
     assert capsys.readouterr().out.endswith("top words:\n  the: 3\n  cat: 2\n")
+
+
+def test_python_dash_m_textstats_prints_report(tmp_path: Path) -> None:
+    path = tmp_path / "in.txt"
+    path.write_text(TEXT, encoding="utf-8")
+
+    result = subprocess.run(
+        [sys.executable, "-m", "textstats", str(path)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == format_report(TEXT) + "\n"
