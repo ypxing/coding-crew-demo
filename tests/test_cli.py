@@ -82,3 +82,14 @@ def test_directory_reports_error_and_returns_one(
     captured = capsys.readouterr()
     assert captured.out == ""
     assert captured.err.startswith("textstats: error: ")
+
+
+def test_invalid_utf8_reports_error_and_returns_one(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    path = tmp_path / "bad.txt"
+    path.write_bytes(b"\xff\xfe\xfa")
+    assert main([str(path)]) == 1
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err.startswith("textstats: error: ")
