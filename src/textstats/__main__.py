@@ -14,7 +14,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         text = Path(args.file).read_text(encoding="utf-8")
-    except OSError as exc:
+    except (OSError, UnicodeDecodeError) as exc:
         print(f"textstats: error: {exc}", file=sys.stderr)
         return 1
     print(format_report(text, n=args.top))
