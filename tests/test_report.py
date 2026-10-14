@@ -19,3 +19,9 @@ def test_format_report_full_summary() -> None:
         "  cat: 2\n"
         "  a: 1"
     )
+
+
+def test_format_report_empty_text_shows_none() -> None:
+    assert format_report("") == (
+        "words: 0\ncharacters: 0\ncharacters (no spaces): 0\ntop words:\n  (none)"
+    )
