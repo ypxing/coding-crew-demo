@@ -13,3 +13,13 @@ def test_format_report_labeled_lines_without_trailing_newline() -> None:
         "  a: 1"
     )
     assert "format_report" in textstats.__all__
+
+
+def test_format_report_empty_text_shows_none() -> None:
+    assert format_report("") == (
+        "words: 0\ncharacters: 0\ncharacters (no spaces): 0\ntop words:\n  (none)"
+    )
+
+
+def test_format_report_n_zero_shows_none() -> None:
+    assert format_report("a b", n=0).endswith("top words:\n  (none)")
