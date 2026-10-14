@@ -28,12 +28,31 @@ def test_format_report_empty_text_shows_none() -> None:
 
 
 def test_format_report_limits_top_words_to_n() -> None:
-    report = format_report("b a b c a b", n=2)
-    assert report.endswith("top words:\n  b: 3\n  a: 2")
+    assert format_report("b a b c a b", n=2) == (
+        "words: 6\n"
+        "characters: 11\n"
+        "characters (no spaces): 6\n"
+        "top words:\n"
+        "  b: 3\n"
+        "  a: 2"
+    )
+
+
+def test_format_report_breaks_ties_alphabetically() -> None:
+    assert format_report("b a c b a c d", n=2) == (
+        "words: 7\n"
+        "characters: 13\n"
+        "characters (no spaces): 7\n"
+        "top words:\n"
+        "  a: 2\n"
+        "  b: 2"
+    )
 
 
 def test_format_report_zero_n_shows_none() -> None:
-    assert format_report("a b", n=0).endswith("top words:\n  (none)")
+    assert format_report("a b", n=0) == (
+        "words: 2\ncharacters: 3\ncharacters (no spaces): 2\ntop words:\n  (none)"
+    )
 
 
 def test_format_report_rejects_negative_n() -> None:
