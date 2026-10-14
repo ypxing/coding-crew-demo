@@ -14,3 +14,7 @@ def main(argv: list[str] | None = None) -> int:
         text = f.read()
     print(format_report(text, n=args.top))
     return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
