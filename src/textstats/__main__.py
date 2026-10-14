@@ -15,7 +15,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         with open(args.file, encoding="utf-8") as f:
             text = f.read()
-    except OSError as exc:
+    except (OSError, UnicodeDecodeError) as exc:
         print(f"textstats: error: {exc}", file=sys.stderr)
         return 1
     print(format_report(text, n=args.top))
