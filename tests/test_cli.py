@@ -117,3 +117,14 @@ def test_main_negative_top_is_usage_error_before_reading_file(
     assert out == ""
     assert err.startswith("usage: textstats")
     assert "textstats: error:" in err
+
+
+def test_main_non_integer_top_is_usage_error(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    with pytest.raises(SystemExit) as excinfo:
+        main([_write(tmp_path), "--top", "abc"])
+    assert excinfo.value.code == 2
+    out, err = capsys.readouterr()
+    assert out == ""
+    assert err.startswith("usage: textstats")
