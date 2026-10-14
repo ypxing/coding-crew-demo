@@ -120,3 +120,13 @@ def test_main_rejects_negative_top_before_reading_file(
     captured = capsys.readouterr()
     assert captured.err.startswith("usage: textstats")
     assert "--top" in captured.err
+
+
+def test_main_rejects_non_integer_top(tmp_path: Path) -> None:
+    path = tmp_path / "input.txt"
+    path.write_text("a b c", encoding="utf-8")
+
+    with pytest.raises(SystemExit) as excinfo:
+        main([str(path), "--top", "abc"])
+
+    assert excinfo.value.code == 2
