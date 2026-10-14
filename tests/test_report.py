@@ -28,3 +28,12 @@ def test_format_report_empty_text() -> None:
 
 def test_format_report_n_zero_shows_none() -> None:
     assert format_report("a b", n=0).endswith("top words:\n  (none)")
+
+
+def test_format_report_limits_top_words_and_breaks_ties_alphabetically() -> None:
+    assert format_report("z y x z", n=2).endswith("top words:\n  z: 2\n  x: 1")
+
+
+def test_format_report_rejects_negative_n() -> None:
+    with pytest.raises(ValueError):
+        format_report("a", n=-1)
