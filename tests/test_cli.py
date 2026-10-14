@@ -86,3 +86,12 @@ def test_main_reports_missing_file_as_error(
     assert captured.out == ""
     assert captured.err.startswith("textstats: error:")
     assert "Traceback" not in captured.err
+
+
+def test_main_reports_directory_as_error(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert main([str(tmp_path)]) == 1
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err.startswith("textstats: error:")
