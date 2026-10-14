@@ -63,3 +63,28 @@ def test_python_m_textstats_prints_report(tmp_path: Path) -> None:
 
     assert result.returncode == 0
     assert result.stdout == format_report(text) + "\n"
+
+
+def test_python_m_textstats_decodes_utf8_regardless_of_locale(tmp_path: Path) -> None:
+    text = "naïve café — déjà vu"
+    path = tmp_path / "input.txt"
+    path.write_text(text, encoding="utf-8")
+    # An ASCII locale with coercion and UTF-8 mode off makes the default encoding non-UTF-8.
+    env = {
+        **os.environ,
+        "LC_ALL": "C",
+        "PYTHONCOERCECLOCALE": "0",
+        "PYTHONUTF8": "0",
+        "PYTHONIOENCODING": "utf-8",
+    }
+
+    result = subprocess.run(
+        [sys.executable, "-m", "textstats", str(path)],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        env=env,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == format_report(text) + "\n"
