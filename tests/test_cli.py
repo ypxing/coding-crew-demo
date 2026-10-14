@@ -106,3 +106,16 @@ def test_invalid_utf8_file_reports_error_on_stderr_and_returns_one(
     captured = capsys.readouterr()
     assert captured.out == ""
     assert captured.err.startswith("textstats: error: ")
+
+
+def test_negative_top_is_a_usage_error_and_file_is_not_read(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # A missing file would return 1 if it were read, so exit 2 proves the check runs first.
+    with pytest.raises(SystemExit) as excinfo:
+        main([str(tmp_path / "missing.txt"), "--top", "-1"])
+
+    assert excinfo.value.code == 2
+    err = capsys.readouterr().err
+    assert err.startswith("usage: textstats")
+    assert "textstats: error: " in err
