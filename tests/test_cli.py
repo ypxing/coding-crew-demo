@@ -21,3 +21,12 @@ def test_main_prints_report_for_file_and_returns_zero(
     out, err = capsys.readouterr()
     assert out == format_report(TEXT) + "\n"
     assert err == ""
+
+
+def test_main_top_limits_report_to_n_top_words(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert main([_write(tmp_path), "--top", "2"]) == 0
+    out, _ = capsys.readouterr()
+    assert out == format_report(TEXT, n=2) + "\n"
+    assert out.endswith("top words:\n  the: 3\n  cat: 2\n")
