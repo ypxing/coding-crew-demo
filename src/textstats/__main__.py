@@ -15,6 +15,8 @@ def main(argv: list[str] | None = None) -> int:
         "--top", type=int, default=3, metavar="N", help="number of top words (default: 3)"
     )
     args = parser.parse_args(argv)
+    if args.top < 0:
+        parser.error(f"argument --top: must be >= 0, got {args.top}")
     try:
         text = Path(args.file).read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError) as exc:
