@@ -119,3 +119,16 @@ def test_negative_top_is_a_usage_error_and_file_is_not_read(
     err = capsys.readouterr().err
     assert err.startswith("usage: textstats")
     assert "textstats: error: " in err
+
+
+def test_non_integer_top_is_a_usage_error(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    path = tmp_path / "in.txt"
+    path.write_text(TEXT, encoding="utf-8")
+
+    with pytest.raises(SystemExit) as excinfo:
+        main([str(path), "--top", "abc"])
+
+    assert excinfo.value.code == 2
+    assert capsys.readouterr().out == ""
