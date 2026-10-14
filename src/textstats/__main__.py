@@ -12,6 +12,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("file", metavar="FILE")
     parser.add_argument("--top", metavar="N", type=int, default=3)
     args = parser.parse_args(argv)
+    if args.top < 0:
+        parser.error(f"argument --top: must be >= 0, got {args.top}")
     try:
         text = Path(args.file).read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError) as exc:
