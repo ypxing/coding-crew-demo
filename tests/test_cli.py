@@ -76,3 +76,13 @@ def test_python_m_textstats_reads_utf8_under_ascii_locale(tmp_path: Path) -> Non
 
     assert result.returncode == 0, result.stderr
     assert result.stdout == format_report(contents) + "\n"
+
+
+def test_main_reports_missing_file_as_error(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert main([str(tmp_path / "missing.txt")]) == 1
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err.startswith("textstats: error:")
+    assert "Traceback" not in captured.err
