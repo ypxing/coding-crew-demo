@@ -19,3 +19,14 @@ def test_main_prints_report_with_default_top_three_and_returns_zero(
     out = capsys.readouterr().out
     assert out == format_report(TEXT) + "\n"
     assert out.endswith("top words:\n  the: 3\n  cat: 2\n  a: 1\n")
+
+
+def test_main_top_option_limits_top_words(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    path = tmp_path / "in.txt"
+    path.write_text(TEXT, encoding="utf-8")
+
+    assert main([str(path), "--top", "2"]) == 0
+
+    assert capsys.readouterr().out.endswith("top words:\n  the: 3\n  cat: 2\n")
