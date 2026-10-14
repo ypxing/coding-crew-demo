@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -51,3 +52,25 @@ def test_python_m_textstats_prints_report_and_exits_zero(tmp_path: Path) -> None
     )
     assert result.returncode == 0
     assert result.stdout == format_report(TEXT) + "\n"
+
+
+def test_python_m_textstats_decodes_utf8_under_ascii_locale(tmp_path: Path) -> None:
+    text = "café naïve café"
+    # C locale with coercion and UTF-8 mode off makes the default encoding ASCII.
+    env = {
+        **os.environ,
+        "LC_ALL": "C",
+        "PYTHONCOERCECLOCALE": "0",
+        "PYTHONUTF8": "0",
+        "PYTHONIOENCODING": "utf-8",
+    }
+    result = subprocess.run(
+        [sys.executable, "-m", "textstats", _write(tmp_path, text)],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        env=env,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == format_report(text) + "\n"
