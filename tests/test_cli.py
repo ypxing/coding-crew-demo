@@ -118,3 +118,16 @@ def test_negative_top_is_usage_error_before_file_is_read(
     assert captured.out == ""
     assert captured.err.startswith("usage: textstats")
     assert "--top" in captured.err
+
+
+def test_non_integer_top_is_usage_error(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    path = tmp_path / "in.txt"
+    path.write_text("the cat", encoding="utf-8")
+
+    with pytest.raises(SystemExit) as exc_info:
+        main([str(path), "--top", "abc"])
+
+    assert exc_info.value.code == 2
+    assert capsys.readouterr().out == ""
