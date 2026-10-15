@@ -33,3 +33,18 @@ def test_main_reads_stdin_without_file_or_with_dash(
     feed_stdin(monkeypatch, "café café x".encode())
     assert main(argv) == 0
     assert capsys.readouterr().out == report("café café x")
+
+
+def test_crlf_bytes_give_same_report_from_file_and_stdin(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    data = b"a b\r\nc\r\n"
+    path = tmp_path / "crlf.txt"
+    path.write_bytes(data)
+    assert main([str(path)]) == 0
+    from_file = capsys.readouterr().out
+    feed_stdin(monkeypatch, data)
+    assert main([]) == 0
+    from_stdin = capsys.readouterr().out
+    assert from_file == from_stdin
+    assert "characters: 8\n" in from_file
