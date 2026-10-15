@@ -1,4 +1,6 @@
 import io
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -93,3 +95,17 @@ def test_invalid_utf8_is_a_usage_error(
     captured = capsys.readouterr()
     assert captured.out == ""
     assert "UTF-8" in captured.err
+
+
+def test_python_dash_m_matches_main(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    path = tmp_path / "in.txt"
+    path.write_text("b a b c a b", encoding="utf-8")
+    main([str(path), "--top", "2"])
+    expected = capsys.readouterr().out
+    result = subprocess.run(
+        [sys.executable, "-m", "textstats", str(path), "--top", "2"],
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode == 0
+    assert result.stdout.decode("utf-8") == expected
