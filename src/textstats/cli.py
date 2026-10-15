@@ -9,8 +9,9 @@ from textstats.report import report
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="textstats")
     parser.add_argument("file", nargs="?", default="-")
+    parser.add_argument("--top", type=int, default=3)
     args = parser.parse_args(argv)
     with open(args.file, encoding="utf-8", newline="") as f:
         text = f.read()
-    sys.stdout.write(report(text))
+    sys.stdout.write(report(text, top=args.top))
     return 0

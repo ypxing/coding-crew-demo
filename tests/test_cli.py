@@ -11,3 +11,10 @@ def test_main_prints_report_for_file(tmp_path: Path, capsys: pytest.CaptureFixtu
     path.write_text("b a b c a b", encoding="utf-8")
     assert main([str(path)]) == 0
     assert capsys.readouterr().out == report("b a b c a b")
+
+
+def test_main_passes_top_to_report(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    path = tmp_path / "in.txt"
+    path.write_text("b a b c a b", encoding="utf-8")
+    assert main([str(path), "--top", "1"]) == 0
+    assert capsys.readouterr().out == report("b a b c a b", top=1)
