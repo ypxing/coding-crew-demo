@@ -11,6 +11,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("file", nargs="?", default="-")
     parser.add_argument("--top", type=int, default=3)
     args = parser.parse_args(argv)
+    if args.top < 0:
+        parser.error(f"--top must be 0 or more, got {args.top}")
     if args.file == "-":
         text = sys.stdin.buffer.read().decode("utf-8")
     else:

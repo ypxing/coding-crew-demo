@@ -48,3 +48,12 @@ def test_crlf_bytes_give_same_report_from_file_and_stdin(
     from_stdin = capsys.readouterr().out
     assert from_file == from_stdin
     assert "characters: 8\n" in from_file
+
+
+def test_negative_top_is_a_usage_error(capsys: pytest.CaptureFixture[str]) -> None:
+    with pytest.raises(SystemExit) as exc:
+        main(["--top", "-1"])
+    assert exc.value.code == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "--top" in captured.err
