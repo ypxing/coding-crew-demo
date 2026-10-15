@@ -1,6 +1,7 @@
 # textstats
 
-A small text statistics library (word count, character count, most frequent words).
+A small text statistics library (word count, character count, most frequent words), with
+`report(text, top=3)` rendering them as a plain-text report.
 
 It exists as the demo project [coding-crew](https://github.com/ypxing/coding-crew) runs a real
 crew-afk sprint against before each release; coding-crew pins one commit of it.
