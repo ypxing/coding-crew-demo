@@ -57,3 +57,16 @@ def test_negative_top_is_a_usage_error(capsys: pytest.CaptureFixture[str]) -> No
     captured = capsys.readouterr()
     assert captured.out == ""
     assert "--top" in captured.err
+
+
+@pytest.mark.parametrize("name", ["missing.txt", "."])
+def test_unreadable_file_is_a_usage_error(
+    name: str, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    with pytest.raises(SystemExit) as exc:
+        main([str(tmp_path / name)])
+    assert exc.value.code == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "error:" in captured.err
+    assert "Traceback" not in captured.err

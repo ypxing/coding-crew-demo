@@ -16,7 +16,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.file == "-":
         text = sys.stdin.buffer.read().decode("utf-8")
     else:
-        with open(args.file, encoding="utf-8", newline="") as f:
-            text = f.read()
+        try:
+            with open(args.file, encoding="utf-8", newline="") as f:
+                text = f.read()
+        except OSError as exc:
+            parser.error(f"cannot read {args.file}: {exc.strerror}")
     sys.stdout.write(report(text, top=args.top))
     return 0
