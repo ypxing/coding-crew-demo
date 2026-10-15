@@ -70,3 +70,26 @@ def test_unreadable_file_is_a_usage_error(
     assert captured.out == ""
     assert "error:" in captured.err
     assert "Traceback" not in captured.err
+
+
+@pytest.mark.parametrize("source", ["file", "stdin"])
+def test_invalid_utf8_is_a_usage_error(
+    source: str,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    data = b"\xff\xfe"
+    if source == "file":
+        path = tmp_path / "bad.txt"
+        path.write_bytes(data)
+        argv = [str(path)]
+    else:
+        feed_stdin(monkeypatch, data)
+        argv = []
+    with pytest.raises(SystemExit) as exc:
+        main(argv)
+    assert exc.value.code == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "UTF-8" in captured.err
