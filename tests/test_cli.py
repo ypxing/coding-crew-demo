@@ -119,3 +119,19 @@ def test_main_invalid_utf8_reports_error_and_returns_one(
     captured = capsys.readouterr()
     assert captured.out == ""
     assert captured.err.startswith("textstats: error: ")
+
+
+def test_main_negative_top_is_usage_error_before_reading_file(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # A missing path proves the ordering: reading it first would return 1, not exit 2.
+    missing = tmp_path / "missing.txt"
+
+    with pytest.raises(SystemExit) as excinfo:
+        main([str(missing), "--top", "-1"])
+
+    assert excinfo.value.code == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "usage:" in captured.err
+    assert "--top" in captured.err
