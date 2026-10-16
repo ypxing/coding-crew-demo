@@ -50,3 +50,15 @@ def test_python_m_textstats_runs_as_subprocess(tmp_path: Path) -> None:
 
     assert result.returncode == 0
     assert result.stdout == format_report("the cat the a cat the") + "\n"
+
+
+def test_main_reads_file_as_utf8_regardless_of_locale(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    text = "café naïve café\n"
+    path = tmp_path / "unicode.txt"
+    path.write_bytes(text.encode("utf-8"))
+
+    assert main([str(path)]) == 0
+
+    assert capsys.readouterr().out == format_report(text) + "\n"
