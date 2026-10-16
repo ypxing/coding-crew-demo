@@ -1,4 +1,5 @@
 import pytest
+
 import textstats
 from textstats import format_report
 
