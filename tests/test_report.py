@@ -40,6 +40,10 @@ def test_format_report_limits_top_words_ordered_by_count_then_alphabetically() -
     )
 
 
+def test_format_report_breaks_count_tie_at_cut_alphabetically() -> None:
+    assert format_report("b a", n=1).endswith("top words:\n  a: 1")
+
+
 def test_format_report_rejects_negative_n() -> None:
     with pytest.raises(ValueError):
         format_report("a", n=-1)
