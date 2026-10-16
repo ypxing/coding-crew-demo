@@ -87,6 +87,18 @@ def test_main_invalid_utf8_reports_error_and_returns_1(
     assert captured.err.startswith("textstats: error:")
 
 
+def test_main_negative_top_is_usage_error_before_reading_file(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    path = tmp_path / "missing.txt"
+
+    with pytest.raises(SystemExit) as excinfo:
+        main([str(path), "--top", "-1"])
+
+    assert excinfo.value.code == 2
+    assert "usage: textstats" in capsys.readouterr().err
+
+
 def test_main_reads_file_as_utf8_regardless_of_locale(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
