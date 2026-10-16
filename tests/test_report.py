@@ -19,3 +19,9 @@ def test_format_report_sample_text() -> None:
 
 def test_format_report_is_exported() -> None:
     assert "format_report" in textstats.__all__
+
+
+def test_format_report_empty_text_has_no_top_words() -> None:
+    assert format_report("") == "\n".join(
+        ["words: 0", "characters: 0", "characters (no spaces): 0", "top words:", "  (none)"]
+    )
