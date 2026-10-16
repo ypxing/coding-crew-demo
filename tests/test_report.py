@@ -41,3 +41,8 @@ def test_format_report_limits_and_orders_top_words() -> None:
 def test_format_report_rejects_negative_n() -> None:
     with pytest.raises(ValueError):
         format_report("a", n=-1)
+
+
+def test_format_report_breaks_ties_alphabetically() -> None:
+    report = format_report("z y x", n=2)
+    assert report.split("top words:\n", 1)[1] == "  x: 1\n  y: 1"
