@@ -67,6 +67,19 @@ def test_main_reads_file_as_utf8(tmp_path: Path, capsys: pytest.CaptureFixture[s
     assert capsys.readouterr().out == format_report(text) + "\n"
 
 
+def test_main_counts_crlf_line_endings_as_characters(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    text = "the cat\r\nthe a\r\n"
+    path = tmp_path / "crlf.txt"
+    path.write_bytes(text.encode("utf-8"))
+
+    assert main([str(path)]) == 0
+
+    assert capsys.readouterr().out == format_report(text) + "\n"
+    assert format_report(text).splitlines()[1] == "characters: 16"
+
+
 def test_main_missing_file_reports_error(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:

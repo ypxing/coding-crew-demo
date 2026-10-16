@@ -34,6 +34,18 @@ def test_format_report_limits_top_words_to_n() -> None:
     assert format_report("the cat the a cat the", n=2) == expected
 
 
+def test_format_report_breaks_ties_alphabetically() -> None:
+    expected = (
+        "words: 3\n"
+        "characters: 5\n"
+        "characters (no spaces): 3\n"
+        "top words:\n"
+        "  a: 1\n"
+        "  b: 1"
+    )
+    assert format_report("b a c", n=2) == expected
+
+
 def test_format_report_empty_text() -> None:
     expected = (
         "words: 0\n"

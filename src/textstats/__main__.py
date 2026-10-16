@@ -1,6 +1,5 @@
 import argparse
 import sys
-from pathlib import Path
 
 from textstats.report import format_report
 
@@ -13,7 +12,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.top < 0:
         parser.error("--top must be zero or greater")
     try:
-        text = Path(args.file).read_text(encoding="utf-8")
+        with open(args.file, encoding="utf-8", newline="") as f:
+            text = f.read()
     except (OSError, UnicodeDecodeError) as exc:
         print(f"textstats: error: {exc}", file=sys.stderr)
         return 1
