@@ -52,6 +52,18 @@ def test_python_m_textstats_runs_as_subprocess(tmp_path: Path) -> None:
     assert result.stdout == format_report("the cat the a cat the") + "\n"
 
 
+def test_main_missing_file_reports_error_and_returns_1(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    path = tmp_path / "missing.txt"
+
+    assert main([str(path)]) == 1
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err.startswith("textstats: error:")
+
+
 def test_main_reads_file_as_utf8_regardless_of_locale(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
