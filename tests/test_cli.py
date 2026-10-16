@@ -1,3 +1,5 @@
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -33,3 +35,18 @@ def test_main_default_lists_three_top_words(
     assert main([str(path)]) == 0
 
     assert capsys.readouterr().out.endswith("top words:\n  a: 3\n  b: 3\n  c: 2\n")
+
+
+def test_python_m_textstats_runs_as_subprocess(tmp_path: Path) -> None:
+    path = tmp_path / "sample.txt"
+    path.write_text("the cat the a cat the", encoding="utf-8")
+
+    result = subprocess.run(
+        [sys.executable, "-m", "textstats", str(path)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == format_report("the cat the a cat the") + "\n"
