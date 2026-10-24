@@ -23,7 +23,7 @@ def test_format_report_is_exported() -> None:
 
 
 def test_format_report_limits_top_words_to_n_with_ties_alphabetical() -> None:
-    assert format_report("b a b c a b", n=2).splitlines()[-2:] == ["  b: 3", "  a: 2"]
+    assert format_report("c a b b b", n=2).splitlines()[-2:] == ["  b: 3", "  a: 1"]
 
 
 def test_format_report_empty_text() -> None:
