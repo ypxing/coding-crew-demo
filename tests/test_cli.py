@@ -1,7 +1,8 @@
-import locale
+import builtins
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -122,10 +123,19 @@ def test_module_runs_as_subprocess(tmp_path: Path) -> None:
 def test_main_reads_file_as_utf8_regardless_of_locale(
     tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(locale, "getpreferredencoding", lambda do_setlocale=True: "ascii")
     path = tmp_path / "doc.txt"
     path.write_text("café café", encoding="utf-8")
+    real_open = builtins.open
+    encodings_used: list[object] = []
+
+    def spy_open(file: Any, *args: Any, **kwargs: Any) -> Any:
+        if file == str(path):
+            encodings_used.append(kwargs.get("encoding"))
+        return real_open(file, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "open", spy_open)
 
     assert main([str(path)]) == 0
 
+    assert encodings_used == ["utf-8"]
     assert "characters: 9" in capsys.readouterr().out.splitlines()
