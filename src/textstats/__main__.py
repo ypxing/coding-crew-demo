@@ -11,6 +11,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("file", help="path to a UTF-8 text file")
     parser.add_argument("--top", type=int, default=3, help="number of top words to list")
     args = parser.parse_args(argv)
+    if args.top < 0:
+        parser.error("--top must be non-negative")
 
     try:
         with open(args.file, encoding="utf-8") as handle:
