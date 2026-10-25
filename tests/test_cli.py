@@ -9,7 +9,9 @@ from textstats import format_report
 from textstats.__main__ import main
 
 
-def test_main_prints_report_for_utf8_file(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+def test_main_prints_report_for_utf8_file(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
     text = "the cat the a cat the"
     path = tmp_path / "doc.txt"
     path.write_text(text, encoding="utf-8")
@@ -19,7 +21,9 @@ def test_main_prints_report_for_utf8_file(tmp_path: Path, capsys: pytest.Capture
     assert capsys.readouterr().out == format_report(text) + "\n"
 
 
-def test_main_top_option_limits_top_words(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+def test_main_top_option_limits_top_words(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
     text = "the cat the a cat the"
     path = tmp_path / "doc.txt"
     path.write_text(text, encoding="utf-8")
@@ -29,7 +33,9 @@ def test_main_top_option_limits_top_words(tmp_path: Path, capsys: pytest.Capture
     assert capsys.readouterr().out == format_report(text, n=2) + "\n"
 
 
-def test_main_defaults_to_three_top_words(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+def test_main_defaults_to_three_top_words(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
     text = "d c b a d c b"
     path = tmp_path / "doc.txt"
     path.write_text(text, encoding="utf-8")
