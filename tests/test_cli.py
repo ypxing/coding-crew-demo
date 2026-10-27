@@ -64,3 +64,15 @@ def test_python_m_textstats_runs_as_subprocess(tmp_path: Path) -> None:
 
     assert result.returncode == 0
     assert result.stdout == format_report(text) + "\n"
+
+
+def test_main_reports_missing_file_as_error(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    missing = tmp_path / "missing.txt"
+
+    assert main([str(missing)]) == 1
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err.startswith("textstats: error:")
