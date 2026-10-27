@@ -18,7 +18,7 @@ def main(argv: list[str] | None = None) -> int:
         with open(args.file, encoding="utf-8") as handle:
             text = handle.read()
     except (OSError, UnicodeDecodeError) as exc:
-        reason = exc.strerror or str(exc) if isinstance(exc, OSError) else str(exc)
+        reason = (exc.strerror or str(exc)) if isinstance(exc, OSError) else str(exc)
         print(f"textstats: error: {reason}", file=sys.stderr)
         return 1
     print(format_report(text, n=args.top))
