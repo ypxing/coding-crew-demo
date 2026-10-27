@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -48,6 +49,31 @@ def test_main_decodes_file_as_utf8(tmp_path: Path, capsys: pytest.CaptureFixture
     assert main([str(sample)]) == 0
 
     assert "characters: 10\n" in capsys.readouterr().out
+
+
+def test_main_decodes_file_as_utf8_under_ascii_locale(tmp_path: Path) -> None:
+    sample = tmp_path / "sample.txt"
+    sample.write_bytes("café naïve".encode())
+    env = {
+        **os.environ,
+        "LC_ALL": "C",
+        "PYTHONUTF8": "0",
+        "PYTHONCOERCECLOCALE": "0",
+        "PYTHONIOENCODING": "utf-8",
+    }
+
+    code = "import sys; from textstats.__main__ import main; sys.exit(main([sys.argv[1]]))"
+    result = subprocess.run(
+        [sys.executable, "-c", code, str(sample)],
+        env=env,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "characters: 10\n" in result.stdout
 
 
 def test_python_m_textstats_runs_as_subprocess(tmp_path: Path) -> None:
