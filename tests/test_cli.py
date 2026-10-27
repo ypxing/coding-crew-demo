@@ -73,7 +73,9 @@ def test_file_is_read_as_utf8_regardless_of_locale(tmp_path: Path) -> None:
     assert result.stdout == (format_report("café café") + "\n").encode("utf-8")
 
 
-def test_missing_file_reports_error_and_exits_1(tmp_path: Path, capsys: CaptureFixture[str]) -> None:
+def test_missing_file_reports_error_and_exits_1(
+    tmp_path: Path, capsys: CaptureFixture[str]
+) -> None:
     code = main([str(tmp_path / "missing.txt")])
 
     captured = capsys.readouterr()
