@@ -96,3 +96,15 @@ def test_main_reports_invalid_utf8_on_stderr(
     captured = capsys.readouterr()
     assert captured.out == ""
     assert captured.err.startswith("textstats: error:")
+
+
+def test_main_rejects_negative_top_before_reading_file(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    path = tmp_path / "missing.txt"
+
+    with pytest.raises(SystemExit) as excinfo:
+        main([str(path), "--top", "-1"])
+
+    assert excinfo.value.code == 2
+    assert "usage:" in capsys.readouterr().err
