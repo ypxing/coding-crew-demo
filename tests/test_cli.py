@@ -73,3 +73,26 @@ def test_main_reports_missing_file_on_stderr(
     captured = capsys.readouterr()
     assert captured.out == ""
     assert captured.err.startswith("textstats: error:")
+
+
+def test_main_reports_directory_on_stderr(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert main([str(tmp_path)]) == 1
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err.startswith("textstats: error:")
+
+
+def test_main_reports_invalid_utf8_on_stderr(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    path = tmp_path / "doc.txt"
+    path.write_bytes(b"\xff\xfe\xfa")
+
+    assert main([str(path)]) == 1
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err.startswith("textstats: error:")
