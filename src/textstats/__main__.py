@@ -1,6 +1,7 @@
 """Command-line entry point: ``python -m textstats FILE [--top N]``."""
 
 import argparse
+import sys
 
 from textstats.report import format_report
 
@@ -10,8 +11,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("file")
     parser.add_argument("--top", type=int, default=3)
     args = parser.parse_args(argv)
-    with open(args.file, encoding="utf-8") as handle:
-        text = handle.read()
+    if args.top < 0:
+        parser.error("--top must be non-negative")
+    try:
+        with open(args.file, encoding="utf-8") as handle:
+            text = handle.read()
+    except OSError as error:
+        print(f"textstats: error: {error.strerror or error}", file=sys.stderr)
+        return 1
+    except UnicodeDecodeError as error:
+        print(f"textstats: error: {error}", file=sys.stderr)
+        return 1
     print(format_report(text, n=args.top))
     return 0
 

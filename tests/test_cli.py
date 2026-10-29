@@ -56,6 +56,66 @@ def test_module_runs_as_script_and_prints_report(tmp_path: Path) -> None:
     assert result.stdout == format_report("the cat the a cat the") + "\n"
 
 
+def test_main_reports_missing_file_as_error(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    missing = tmp_path / "missing.txt"
+
+    assert main([str(missing)]) == 1
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err.startswith("textstats: error:")
+
+
+def test_main_reports_directory_as_error(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert main([str(tmp_path)]) == 1
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err.startswith("textstats: error:")
+
+
+def test_main_reports_invalid_utf8_as_error(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    source = tmp_path / "binary.txt"
+    source.write_bytes(b"\xff\xfe\xfa")
+
+    assert main([str(source)]) == 1
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err.startswith("textstats: error:")
+
+
+def test_main_rejects_negative_top_before_reading_file(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    source = tmp_path / "sample.txt"
+    source.write_text("the cat", encoding="utf-8")
+
+    with pytest.raises(SystemExit) as excinfo:
+        main([str(source), "--top", "-1"])
+
+    assert excinfo.value.code == 2
+    assert "usage:" in capsys.readouterr().err
+
+
+def test_main_rejects_non_integer_top(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    source = tmp_path / "sample.txt"
+    source.write_text("the cat", encoding="utf-8")
+
+    with pytest.raises(SystemExit) as excinfo:
+        main([str(source), "--top", "abc"])
+
+    assert excinfo.value.code == 2
+
+
 def test_main_decodes_file_as_utf8(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     source = tmp_path / "accents.txt"
     source.write_bytes("café naïve".encode())
