@@ -58,7 +58,7 @@ def test_module_runs_as_script_and_prints_report(tmp_path: Path) -> None:
 
 def test_main_decodes_file_as_utf8(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     source = tmp_path / "accents.txt"
-    source.write_bytes("café naïve".encode("utf-8"))
+    source.write_bytes("café naïve".encode())
 
     assert main([str(source)]) == 0
 
