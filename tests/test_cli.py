@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -116,10 +117,23 @@ def test_main_rejects_non_integer_top(
     assert excinfo.value.code == 2
 
 
-def test_main_decodes_file_as_utf8(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+def test_module_decodes_file_as_utf8_under_ascii_locale(tmp_path: Path) -> None:
     source = tmp_path / "accents.txt"
     source.write_bytes("café naïve".encode())
+    env = {
+        **os.environ,
+        "LC_ALL": "C",
+        "PYTHONUTF8": "0",
+        "PYTHONCOERCECLOCALE": "0",
+    }
 
-    assert main([str(source)]) == 0
+    result = subprocess.run(
+        [sys.executable, "-m", "textstats", str(source)],
+        capture_output=True,
+        text=True,
+        check=False,
+        env=env,
+    )
 
-    assert "characters: 10\n" in capsys.readouterr().out
+    assert result.returncode == 0
+    assert "characters: 10\n" in result.stdout
