@@ -15,3 +15,14 @@ def test_main_prints_report_for_utf8_file(
     assert main([str(source)]) == 0
 
     assert capsys.readouterr().out == format_report("the cat the a cat the") + "\n"
+
+
+def test_main_top_option_limits_top_words(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    source = tmp_path / "sample.txt"
+    source.write_text("the cat the a cat the dog", encoding="utf-8")
+
+    assert main([str(source), "--top", "2"]) == 0
+
+    assert capsys.readouterr().out == format_report("the cat the a cat the dog", n=2) + "\n"
