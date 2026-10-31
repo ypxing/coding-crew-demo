@@ -118,3 +118,16 @@ def test_main_rejects_negative_top_before_reading(
 
     assert excinfo.value.code == 2
     assert "usage:" in capsys.readouterr().err
+
+
+def test_main_rejects_non_integer_top(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    path = tmp_path / "sample.txt"
+    path.write_text("the cat", encoding="utf-8")
+
+    with pytest.raises(SystemExit) as excinfo:
+        main([str(path), "--top", "abc"])
+
+    assert excinfo.value.code == 2
+    assert "usage:" in capsys.readouterr().err
