@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -41,13 +42,27 @@ def test_main_lists_three_top_words_by_default(
     assert capsys.readouterr().out.endswith("top words:\n  a: 1\n  b: 1\n  c: 1\n")
 
 
-def test_main_reads_file_as_utf8(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+def test_main_reads_file_as_utf8(tmp_path: Path) -> None:
     path = tmp_path / "accents.txt"
     path.write_bytes("café naïve café\n".encode())
+    # Run under a non-UTF-8 locale so a missing encoding="utf-8" cannot pass by luck.
+    env = {
+        **os.environ,
+        "LC_ALL": "C",
+        "PYTHONUTF8": "0",
+        "PYTHONCOERCECLOCALE": "0",
+    }
 
-    assert main([str(path)]) == 0
+    result = subprocess.run(
+        [sys.executable, "-m", "textstats", str(path)],
+        capture_output=True,
+        text=True,
+        check=False,
+        env=env,
+    )
 
-    assert capsys.readouterr().out == (
+    assert result.returncode == 0
+    assert result.stdout == (
         "words: 4\n"
         "characters: 16\n"
         "characters (no spaces): 13\n"
