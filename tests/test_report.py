@@ -36,3 +36,10 @@ def test_format_report_limits_and_orders_top_words() -> None:
 def test_format_report_rejects_negative_n() -> None:
     with pytest.raises(ValueError):
         format_report("a", n=-1)
+
+
+def test_format_report_is_exported_from_package() -> None:
+    import textstats
+
+    assert "format_report" in textstats.__all__
+    assert textstats.format_report is format_report
