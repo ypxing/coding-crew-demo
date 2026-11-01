@@ -33,6 +33,10 @@ def test_format_report_limits_and_orders_top_words() -> None:
     assert format_report("b a b c a b", n=2).splitlines()[-2:] == ["  b: 3", "  a: 2"]
 
 
+def test_format_report_breaks_ties_alphabetically_inside_top_n() -> None:
+    assert format_report("c a b", n=2).splitlines()[-2:] == ["  a: 1", "  b: 1"]
+
+
 def test_format_report_rejects_negative_n() -> None:
     with pytest.raises(ValueError):
         format_report("a", n=-1)

@@ -59,6 +59,16 @@ def test_main_reads_file_as_utf8_explicitly(
     assert seen.get("encoding") == "utf-8"
 
 
+def test_main_counts_characters_on_disk_for_crlf_files(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    path = tmp_path / "crlf.txt"
+    path.write_bytes(b"the cat\r\nthe a\r\n")
+
+    assert main([str(path)]) == 0
+    assert "characters: 16\n" in capsys.readouterr().out
+
+
 def test_module_prints_report_for_file(tmp_path: Path) -> None:
     path = tmp_path / "sample.txt"
     path.write_text("the cat the a cat the", encoding="utf-8")

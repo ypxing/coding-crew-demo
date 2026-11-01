@@ -16,7 +16,7 @@ def main(argv: list[str] | None = None) -> int:
         parser.error(f"--top must be non-negative, got {args.top}")
 
     try:
-        with open(args.file, encoding="utf-8") as handle:
+        with open(args.file, encoding="utf-8", newline="") as handle:
             text = handle.read()
     except (OSError, UnicodeDecodeError) as exc:
         reason = (exc.strerror if isinstance(exc, OSError) else None) or str(exc)
