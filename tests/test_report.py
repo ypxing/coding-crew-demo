@@ -1,3 +1,6 @@
+import pytest
+
+import textstats
 from textstats.report import format_report
 
 
@@ -25,3 +28,16 @@ def test_format_report_empty_text_has_no_top_words() -> None:
 
 def test_format_report_with_zero_top_words_shows_none() -> None:
     assert format_report("a b", n=0).endswith("top words:\n  (none)")
+
+
+def test_format_report_limits_top_words_to_n_in_count_then_alpha_order() -> None:
+    assert format_report("z y x", n=2).endswith("top words:\n  x: 1\n  y: 1")
+
+
+def test_format_report_rejects_negative_n() -> None:
+    with pytest.raises(ValueError):
+        format_report("a", n=-1)
+
+
+def test_format_report_is_exported_from_package() -> None:
+    assert "format_report" in textstats.__all__
