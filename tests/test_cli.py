@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -51,12 +52,29 @@ def test_python_m_textstats_runs_the_cli(tmp_path: Path) -> None:
     assert result.stdout == format_report("the cat the a cat the") + "\n"
 
 
-def test_main_decodes_file_as_utf8(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+def test_main_decodes_file_as_utf8_under_non_utf8_locale(tmp_path: Path) -> None:
     path = tmp_path / "doc.txt"
     path.write_bytes("café the".encode())
+    # ASCII locale with UTF-8 mode off: open() without encoding="utf-8" would fail here.
+    # PYTHONIOENCODING keeps the child's stdout printable so only decoding is under test.
+    env = {
+        **os.environ,
+        "LC_ALL": "C",
+        "LANG": "C",
+        "PYTHONCOERCECLOCALE": "0",
+        "PYTHONUTF8": "0",
+        "PYTHONIOENCODING": "utf-8",
+    }
 
-    assert main([str(path)]) == 0
-    assert capsys.readouterr().out == format_report("café the") + "\n"
+    result = subprocess.run(
+        [sys.executable, "-m", "textstats", str(path)],
+        capture_output=True,
+        check=False,
+        env=env,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == (format_report("café the") + "\n").encode("utf-8")
 
 
 def test_main_reports_missing_file_as_error(
