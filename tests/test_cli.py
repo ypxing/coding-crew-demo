@@ -47,3 +47,11 @@ def test_python_m_textstats_runs_the_cli(tmp_path: Path) -> None:
 
     assert result.returncode == 0
     assert result.stdout == format_report("the cat the a cat the") + "\n"
+
+
+def test_main_decodes_file_as_utf8(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    path = tmp_path / "doc.txt"
+    path.write_bytes("café the".encode("utf-8"))
+
+    assert main([str(path)]) == 0
+    assert capsys.readouterr().out == format_report("café the") + "\n"
