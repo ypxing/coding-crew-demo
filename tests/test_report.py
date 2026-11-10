@@ -11,3 +11,13 @@ def test_format_report_summarises_counts_and_top_words() -> None:
         "  cat: 2\n"
         "  a: 1"
     )
+
+
+def test_format_report_shows_none_when_no_top_words() -> None:
+    assert format_report("") == (
+        "words: 0\n"
+        "characters: 0\n"
+        "characters (no spaces): 0\n"
+        "top words:\n"
+        "  (none)"
+    )
