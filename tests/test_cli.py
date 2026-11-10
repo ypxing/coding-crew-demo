@@ -8,7 +8,9 @@ from textstats import format_report
 from textstats.__main__ import main
 
 
-def test_main_prints_report_for_utf8_file(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+def test_main_prints_report_for_utf8_file(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
     path = tmp_path / "doc.txt"
     path.write_text("the cat the a cat the", encoding="utf-8")
 
@@ -51,7 +53,7 @@ def test_python_m_textstats_runs_the_cli(tmp_path: Path) -> None:
 
 def test_main_decodes_file_as_utf8(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     path = tmp_path / "doc.txt"
-    path.write_bytes("café the".encode("utf-8"))
+    path.write_bytes("café the".encode())
 
     assert main([str(path)]) == 0
     assert capsys.readouterr().out == format_report("café the") + "\n"
