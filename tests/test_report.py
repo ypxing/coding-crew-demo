@@ -33,7 +33,7 @@ def test_format_report_zero_top_words_shows_none() -> None:
 
 
 def test_format_report_limits_top_words_with_ties_alphabetical() -> None:
-    assert format_report("b a b c a b", n=2).endswith("top words:\n  b: 3\n  a: 2")
+    assert format_report("d c b a", n=2).endswith("top words:\n  a: 1\n  b: 1")
 
 
 def test_format_report_rejects_negative_n() -> None:
