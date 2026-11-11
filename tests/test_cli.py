@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -125,15 +126,22 @@ def test_python_m_textstats_prints_report_and_exits_zero(tmp_path: Path) -> None
     )
 
 
-def test_main_reads_file_as_utf8_regardless_of_locale(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
-) -> None:
+def test_main_reads_file_as_utf8_regardless_of_locale(tmp_path: Path) -> None:
     path = tmp_path / "doc.txt"
     path.write_text("café café", encoding="utf-8")
+    # Non-UTF-8 default encoding (ASCII) in the child: fails if encoding= is dropped from the CLI.
+    env = {**os.environ, "LC_ALL": "C", "PYTHONUTF8": "0", "PYTHONCOERCECLOCALE": "0"}
 
-    assert main([str(path)]) == 0
+    result = subprocess.run(
+        [sys.executable, "-m", "textstats", str(path)],
+        capture_output=True,
+        text=True,
+        check=False,
+        env=env,
+    )
 
-    assert capsys.readouterr().out == (
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == (
         "words: 2\n"
         "characters: 9\n"
         "characters (no spaces): 8\n"
