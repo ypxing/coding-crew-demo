@@ -14,6 +14,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("file")
     parser.add_argument("--top", type=int, default=3)
     args = parser.parse_args(argv)
+    if args.top < 0:
+        parser.error("--top must be zero or more")
     try:
         with open(args.file, encoding="utf-8") as handle:
             text = handle.read()
