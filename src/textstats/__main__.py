@@ -17,6 +17,9 @@ def main(argv: list[str] | None = None) -> int:
     except OSError as exc:
         print(f"textstats: error: {exc.strerror or exc}: {args.file}", file=sys.stderr)
         return 1
+    except UnicodeDecodeError:
+        print(f"textstats: error: {args.file} is not valid UTF-8", file=sys.stderr)
+        return 1
     print(format_report(text, n=args.top))
     return 0
 
