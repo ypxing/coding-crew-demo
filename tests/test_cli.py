@@ -59,3 +59,13 @@ def test_module_run_reads_utf8_under_ascii_locale(tmp_path: Path) -> None:
 
     assert result.returncode == 0
     assert "characters: 9\n" in result.stdout
+
+
+def test_main_missing_file_reports_error_and_returns_one(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert main([str(tmp_path / "missing.txt")]) == 1
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err.startswith("textstats: error:")
