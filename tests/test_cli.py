@@ -63,3 +63,20 @@ def test_python_m_textstats_prints_report_and_exits_zero(tmp_path: Path) -> None
         "  cat: 2\n"
         "  a: 1\n"
     )
+
+
+def test_main_reads_file_as_utf8_regardless_of_locale(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    path = tmp_path / "doc.txt"
+    path.write_text("café café", encoding="utf-8")
+
+    assert main([str(path)]) == 0
+
+    assert capsys.readouterr().out == (
+        "words: 2\n"
+        "characters: 9\n"
+        "characters (no spaces): 8\n"
+        "top words:\n"
+        "  caf: 2\n"
+    )
