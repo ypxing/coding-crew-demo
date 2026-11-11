@@ -92,3 +92,13 @@ def test_main_directory_reports_error_and_returns_one(
     captured = capsys.readouterr()
     assert captured.out == ""
     assert captured.err.startswith("textstats: error:")
+
+
+def test_main_negative_top_is_usage_error_before_reading_file(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    with pytest.raises(SystemExit) as excinfo:
+        main([str(tmp_path / "missing.txt"), "--top", "-1"])
+
+    assert excinfo.value.code == 2
+    assert "usage: textstats" in capsys.readouterr().err
