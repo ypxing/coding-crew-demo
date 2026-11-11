@@ -1,9 +1,13 @@
+import builtins
 import subprocess
 import sys
+from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 import pytest
 
+import textstats.__main__ as cli_module
 from textstats import format_report
 from textstats.__main__ import main
 
@@ -40,10 +44,21 @@ def test_default_lists_three_top_words(tmp_path: Path, capsys: pytest.CaptureFix
     assert top_lines == ["  a: 1", "  b: 1", "  c: 1"]
 
 
-def test_file_is_decoded_as_utf8(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+def test_file_is_decoded_as_utf8(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
     text = "café naïve ümlaut"
     path = tmp_path / "sample.txt"
     path.write_bytes(text.encode("utf-8"))
+    real_open: Callable[..., Any] = builtins.open
+
+    def ascii_locale_open(
+        file: Any, mode: str = "r", *args: Any, encoding: str | None = None, **kwargs: Any
+    ) -> Any:
+        # Stands in for a non-UTF-8 locale: open() without an encoding decodes as ASCII.
+        return real_open(file, mode, *args, encoding=encoding or "ascii", **kwargs)
+
+    monkeypatch.setattr(cli_module, "open", ascii_locale_open, raising=False)
 
     assert main([str(path)]) == 0
     assert capsys.readouterr().out == format_report(text) + "\n"
