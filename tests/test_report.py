@@ -1,5 +1,6 @@
 import pytest
 
+import textstats
 from textstats.report import format_report
 
 
@@ -49,3 +50,8 @@ def test_format_report_limits_top_words_to_n() -> None:
 def test_format_report_rejects_negative_n() -> None:
     with pytest.raises(ValueError):
         format_report("a", n=-1)
+
+
+def test_format_report_is_exported_from_package() -> None:
+    assert "format_report" in textstats.__all__
+    assert textstats.format_report is format_report
