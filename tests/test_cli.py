@@ -22,3 +22,12 @@ def test_main_top_option_limits_top_words(tmp_path: Path, capsys: pytest.Capture
     assert main([str(path), "--top", "2"]) == 0
 
     assert capsys.readouterr().out == format_report("the cat the a cat the", n=2) + "\n"
+
+
+def test_main_defaults_to_three_top_words(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    path = tmp_path / "sample.txt"
+    path.write_text("a b c d e a b c a b a", encoding="utf-8")
+
+    assert main([str(path)]) == 0
+
+    assert capsys.readouterr().out == format_report("a b c d e a b c a b a", n=3) + "\n"
