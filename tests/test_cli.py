@@ -94,3 +94,14 @@ def test_main_reports_non_utf8_file_on_stderr(
     captured = capsys.readouterr()
     assert captured.out == ""
     assert captured.err.startswith("textstats: error:")
+
+
+def test_main_rejects_negative_top_before_reading_file(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # A missing file would make main return 1; argparse must reject --top first.
+    with pytest.raises(SystemExit) as excinfo:
+        main([str(tmp_path / "missing.txt"), "--top", "-1"])
+
+    assert excinfo.value.code == 2
+    assert "usage: textstats" in capsys.readouterr().err
