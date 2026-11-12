@@ -57,6 +57,15 @@ def test_file_is_read_as_utf8(tmp_path: Path, capsys: pytest.CaptureFixture[str]
     assert "characters: 9\n" in capsys.readouterr().out
 
 
+def test_missing_file_prints_error_and_returns_one(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert main([str(tmp_path / "missing.txt")]) == 1
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err.startswith("textstats: error:")
+
+
 def test_python_m_textstats_prints_report_for_file(tmp_path: Path) -> None:
     path = tmp_path / "sample.txt"
     path.write_text("the cat the a cat the", encoding="utf-8")
