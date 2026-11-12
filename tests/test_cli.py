@@ -66,6 +66,50 @@ def test_missing_file_prints_error_and_returns_one(
     assert captured.err.startswith("textstats: error:")
 
 
+def test_directory_prints_error_and_returns_one(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert main([str(tmp_path)]) == 1
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err.startswith("textstats: error:")
+
+
+def test_non_utf8_file_prints_error_and_returns_one(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    path = tmp_path / "binary.txt"
+    path.write_bytes(b"\xff\xfe\xfa")
+
+    assert main([str(path)]) == 1
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err.startswith("textstats: error:")
+
+
+def test_negative_top_is_rejected_before_file_is_read(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    missing = tmp_path / "missing.txt"
+
+    with pytest.raises(SystemExit) as excinfo:
+        main([str(missing), "--top", "-1"])
+    assert excinfo.value.code == 2
+    assert "usage: textstats" in capsys.readouterr().err
+
+
+def test_non_integer_top_is_rejected(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    path = tmp_path / "sample.txt"
+    path.write_text("a b", encoding="utf-8")
+
+    with pytest.raises(SystemExit) as excinfo:
+        main([str(path), "--top", "abc"])
+    assert excinfo.value.code == 2
+    assert "usage: textstats" in capsys.readouterr().err
+
+
 def test_python_m_textstats_prints_report_for_file(tmp_path: Path) -> None:
     path = tmp_path / "sample.txt"
     path.write_text("the cat the a cat the", encoding="utf-8")

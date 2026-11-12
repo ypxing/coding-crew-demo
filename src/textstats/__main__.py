@@ -11,6 +11,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("file", help="UTF-8 text file to summarise")
     parser.add_argument("--top", type=int, default=3, help="number of top words to show")
     args = parser.parse_args(argv)
+    if args.top < 0:
+        parser.error("--top must be zero or positive")
 
     try:
         with open(args.file, encoding="utf-8") as f:
