@@ -31,3 +31,14 @@ def test_format_report_zero_top_words_shows_none() -> None:
         "top words:\n"
         "  (none)"
     )
+
+
+def test_format_report_limits_top_words_to_n() -> None:
+    assert format_report("b a b c a b", n=2) == (
+        "words: 6\n"
+        "characters: 11\n"
+        "characters (no spaces): 6\n"
+        "top words:\n"
+        "  b: 3\n"
+        "  a: 2"
+    )
