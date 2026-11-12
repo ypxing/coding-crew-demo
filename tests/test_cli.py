@@ -17,7 +17,9 @@ def test_main_prints_report_for_file(tmp_path: Path, capsys: pytest.CaptureFixtu
     assert capsys.readouterr().out == format_report("the cat the a cat the") + "\n"
 
 
-def test_main_top_option_limits_top_words(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+def test_main_top_option_limits_top_words(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
     path = tmp_path / "sample.txt"
     path.write_text("the cat the a cat the", encoding="utf-8")
 
@@ -26,7 +28,9 @@ def test_main_top_option_limits_top_words(tmp_path: Path, capsys: pytest.Capture
     assert capsys.readouterr().out == format_report("the cat the a cat the", n=2) + "\n"
 
 
-def test_main_defaults_to_three_top_words(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+def test_main_defaults_to_three_top_words(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
     path = tmp_path / "sample.txt"
     path.write_text("a b c d e a b c a b a", encoding="utf-8")
 
